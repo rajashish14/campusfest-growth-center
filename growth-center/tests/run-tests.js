@@ -54,6 +54,10 @@ async function test(name, fn) {
     const q = engine.query({ table: 'registrations', filters: [{ field: 'person_type', op: 'eq', value: 'external' }, { field: 'was_reconfirmed', op: 'eq', value: true }], as_of: '2025-04-20' });
     assert.strictEqual(q.value, 36);
   });
+  await test('offline analyst computes share of spend in Fix/Cut campaigns (55.5%)', async () => {
+    const r = await copilot.chat({ messages: [{ role: 'user', content: 'What share of total spend went to the campaigns rated Fix or Cut?' }], asOf: '2025-04-20' });
+    assert.ok(/55\.5%/.test(r.reply) && /Paid Social/.test(r.reply) && /Creator Partners/.test(r.reply), r.reply);
+  });
   await test('offline analyst answers staff/test admissions from data (internal 20, staff 10, test 10)', async () => {
     const r = await copilot.chat({ messages: [{ role: 'user', content: 'Were any staff or test accounts admitted?' }], asOf: '2025-04-20' });
     assert.ok(/internal 20, staff 10, test 10/.test(r.reply), r.reply);
@@ -197,7 +201,7 @@ async function test(name, fn) {
     process.env.GEMINI_API_KEY = 'test-key';
     try {
       const r = await copilot.chat({ messages: [{ role: 'user', content: 'Are we on track?' }], asOf: '2025-04-20' });
-      assert.strictEqual(r.mode, 'offline-fallback'); assert.ok(/quota exceeded/.test(r.reply)); assert.ok(/2,050/.test(r.reply));
+      assert.strictEqual(r.mode, 'offline-fallback'); assert.ok(/usage limit was reached/.test(r.reply)); assert.ok(!/quota exceeded/.test(r.reply), 'raw provider error must not leak into the answer'); assert.ok(/quota exceeded/.test(JSON.stringify(r.trace))); assert.ok(/2,050/.test(r.reply));
     } finally { global.fetch = realFetch; delete process.env.GEMINI_API_KEY; }
   });
 

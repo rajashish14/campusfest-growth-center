@@ -8,7 +8,7 @@ Full write-up (research, calculations, design, limitations): see [`../README.md`
 npm install
 cp .env.example .env     # optional: GEMINI_API_KEY from https://aistudio.google.com/apikey
 npm start                # http://localhost:3000
-npm test                 # 33 checks
+npm test                 # 34 checks
 ```
 
 | Path | What it is |

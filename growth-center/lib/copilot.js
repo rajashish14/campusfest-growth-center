@@ -431,6 +431,22 @@ function offline(messages, ctx) {
     return 'To simulate a shift, name two campaigns and an amount, e.g. "move ₹30,000 from Paid Social to College Partnerships".';
   }
 
+  // ---- share of spend (optionally by verdict: "campaigns rated Fix or Cut")
+  if (/\b(share|percent|percentage|proportion|%)\b/.test(t) && /\b(spend|budget|money)\b/.test(t)) {
+    const r = use('get_campaign_performance');
+    const wanted = ['Scale', 'Hold', 'Fix', 'Cut', 'Watch'].filter((v) => new RegExp(`\\b${v.toLowerCase()}\\b`).test(t));
+    const total = r.campaigns.reduce((a, k) => a + k.spend, 0);
+    const pick = wanted.length ? r.campaigns.filter((k) => wanted.includes(k.decision.action)) : r.campaigns;
+    const sub = pick.reduce((a, k) => a + k.spend, 0);
+    const calc = use('calculate', { expression: `${sub} / ${total} * 100` });
+    lines.push(`**Share of spend${wanted.length ? ` in campaigns rated ${wanted.join(' or ')}` : ' by campaign'}** (as of ${r.as_of})\n`);
+    lines.push('| Campaign | Verdict | Spend | Share |\n|---|---|---|---|');
+    pick.slice().sort((a, b) => b.spend - a.spend).forEach((k) => lines.push(`| ${k.campaign_name} | ${k.decision.action} | ${inr(k.spend)} | ${pc(total ? k.spend / total : null)} |`));
+    if (wanted.length) lines.push(`\nCalculation: ${inr(sub)} / ${inr(total)} = **${calc.result.toFixed(1)}%** of total spend.`);
+    lines.push('\nEvidence: get_campaign_performance, calculate.');
+    return lines.join('\n');
+  }
+
   // ---- diagnosis
   if (/\b(why|bottleneck|diagnos|problem|issue|wrong|underperform|leak|worst|fix|risk|concern)\b/.test(t) && !/\btask/.test(t)) {
     const d = use('diagnose').findings.filter((f) => !cid || f.campaign_id === cid || (!f.campaign_id && !cid));
@@ -570,8 +586,11 @@ async function chat({ messages, asOf, mode }) {
       const reply = await chatGemini(messages, ctx, key);
       return { reply, mode: 'gemini', model: ctx.model || GEMINI_MODEL, trace: ctx.trace, proposals: ctx.proposals };
     } catch (e) {
+      // Keep the provider's raw error out of the answer; it stays visible in the tool trace for debugging.
+      const why = /quota|429/i.test(e.message) ? 'its free-tier usage limit was reached' : /demand|503|timed out|504/i.test(e.message) ? 'Google reports high demand' : 'it returned an error';
+      ctx.trace.unshift({ tool: 'gemini (unavailable)', args: {}, result: e.message.slice(0, 400) });
       const reply = offline(messages, ctx);
-      return { reply: `_Gemini unavailable (${e.message}). Answered by the offline analyst instead._\n\n${reply}`, mode: 'offline-fallback', trace: ctx.trace, proposals: ctx.proposals };
+      return { reply: `_The AI model is unavailable right now (${why}), so this answer comes from the built-in offline analyst. It uses the same live data and handles the common question types._\n\n${reply}`, mode: 'offline-fallback', trace: ctx.trace, proposals: ctx.proposals };
     }
   }
   return { reply: offline(messages, ctx), mode: 'offline', trace: ctx.trace, proposals: ctx.proposals };
