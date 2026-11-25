@@ -50,6 +50,15 @@ async function test(name, fn) {
     assert.strictEqual(q.value, 2050);
   });
 
+  await test('status transitions are queryable: 36 cancelled-then-reconfirmed registrations', () => {
+    const q = engine.query({ table: 'registrations', filters: [{ field: 'person_type', op: 'eq', value: 'external' }, { field: 'was_reconfirmed', op: 'eq', value: true }], as_of: '2025-04-20' });
+    assert.strictEqual(q.value, 36);
+  });
+  await test('offline analyst answers staff/test admissions from data (internal 20, staff 10, test 10)', async () => {
+    const r = await copilot.chat({ messages: [{ role: 'user', content: 'Were any staff or test accounts admitted?' }], asOf: '2025-04-20' });
+    assert.ok(/internal 20, staff 10, test 10/.test(r.reply), r.reply);
+  });
+
   console.log('\nSnapshot rules (no later outcome in an earlier snapshot)');
   await test('before the event there are zero visitors and a projection instead', () => {
     const p = engine.snapshot('2025-04-11');

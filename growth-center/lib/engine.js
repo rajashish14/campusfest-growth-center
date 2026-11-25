@@ -618,7 +618,7 @@ function simulateShift(asOf, fromId, toId, amount, elasticity = 0.8) {
 // ------------------------------------------------------------------ generic query layer (for copilot)
 const VIEWS = {
   people: { time: 'first_seen_at', fields: ['person_id', 'person_name', 'person_type', 'first_seen_at', 'first_seen_date', 'first_touch_source', 'first_campaign_id', 'first_campaign_name', 'registered', 'current_status', 'visited'] },
-  registrations: { time: 'registered_at', fields: ['registration_id', 'person_id', 'person_name', 'person_type', 'campaign_id', 'campaign_name', 'registered_at', 'registered_date', 'registered_week', 'current_status', 'visited'] },
+  registrations: { time: 'registered_at', fields: ['registration_id', 'person_id', 'person_name', 'person_type', 'campaign_id', 'campaign_name', 'registered_at', 'registered_date', 'registered_week', 'current_status', 'visited', 'status_path', 'times_cancelled', 'was_reconfirmed', 'ever_waitlisted'] },
   interactions: { time: 'occurred_at', fields: ['interaction_id', 'person_id', 'person_type', 'campaign_id', 'campaign_name', 'event_type', 'occurred_at', 'occurred_date', 'occurred_week'] },
   checkins: { time: 'occurred_at', fields: ['event_id', 'person_id', 'person_type', 'registration_id', 'campaign_id', 'campaign_name', 'result', 'verification', 'source', 'occurred_at', 'occurred_date', 'occurred_hour', 'is_verified_admission'] },
   daily_marketing: { time: 'activity_date', fields: ['activity_id', 'campaign_id', 'campaign_name', 'activity_date', 'activity_week', 'impressions', 'clicks', 'reported_reach', 'landing_page_sessions', 'registration_starts', 'marketing_spend_inr', 'platform'] },
@@ -636,7 +636,15 @@ function viewRows(name, asOf) {
   const cn = (id) => c.campaignName.get(id) || null;
   switch (name) {
     case 'people': return c.people.filter((p) => p.first_seen_at <= cutoff).map((p) => ({ ...p, first_seen_date: dayOf(p.first_seen_at), registered: regPid.has(p.person_id), current_status: regStatus.get(p.person_id) || null, visited: visited.has(p.person_id) }));
-    case 'registrations': return c.registrations.filter((r) => r.registered_at <= cutoff).map((r) => ({ ...r, person_type: c.personType.get(r.person_id), registered_date: dayOf(r.registered_at), registered_week: weekStart(r.registered_at), current_status: statusAsOf(r.registration_id, cutoff), visited: visited.has(r.person_id) }));
+    case 'registrations': return c.registrations.filter((r) => r.registered_at <= cutoff).map((r) => {
+      // status transitions up to the snapshot, e.g. "interested>confirmed>cancelled>confirmed"
+      const path = (c.histByReg.get(r.registration_id) || []).filter((h) => h.effective_at <= cutoff).map((h) => h.status);
+      const ci = path.indexOf('cancelled');
+      return { ...r, person_type: c.personType.get(r.person_id), registered_date: dayOf(r.registered_at), registered_week: weekStart(r.registered_at),
+        current_status: statusAsOf(r.registration_id, cutoff), visited: visited.has(r.person_id), status_path: path.join('>'),
+        times_cancelled: path.filter((x) => x === 'cancelled').length, was_reconfirmed: ci >= 0 && path.slice(ci + 1).includes('confirmed'),
+        ever_waitlisted: path.includes('waitlisted') };
+    });
     case 'interactions': return c.interactions.filter((i) => i.occurred_at <= cutoff).map((i) => ({ ...i, person_type: c.personType.get(i.person_id), occurred_date: dayOf(i.occurred_at), occurred_week: weekStart(i.occurred_at) }));
     case 'checkins': return c.checkins.filter((x) => x.occurred_at <= cutoff).map((x) => { const reg = x.registration_id ? c.regById.get(x.registration_id) : null; const cid = reg ? reg.campaign_id : null; return { ...x, campaign_id: cid, campaign_name: cn(cid), person_type: c.personType.get(x.person_id), occurred_date: dayOf(x.occurred_at), occurred_hour: Number(x.occurred_at.slice(11, 13)), is_verified_admission: x.result === 'admitted' && x.verification === 'verified' }; });
     case 'daily_marketing': return c.daily.filter((d) => d.activity_date <= snap.as_of).map((d) => ({ ...d, activity_week: weekStart(d.activity_date) }));

@@ -205,7 +205,7 @@ Node.js and Express with a vanilla-JS frontend and Chart.js. Data is stored in J
 
 ### Testing
 
-`npm test` runs 29 automated checks against a throwaway data folder:
+`npm test` runs 31 automated checks against a throwaway data folder:
 - baseline numbers (all of §3);
 - snapshot rules (no visitors before the event, target versions switching on 15 March, status replay for R0001);
 - data edits propagating (spend, duplicate-ID edits, new targets, status changes, reset, re-importing the workbook);
@@ -226,7 +226,7 @@ cd growth-center
 npm install
 cp .env.example .env        # optional: paste a free Gemini key from https://aistudio.google.com/apikey
 npm start                   # http://localhost:3000
-npm test                    # 29 checks
+npm test                    # 31 checks
 ```
 
 - **First run** builds `data/raw.json` and `data/ops.json` from `data/Attendee Dataset.xlsx` (the original file is kept untouched for testing). **Reset** in *Data & settings* restores it.

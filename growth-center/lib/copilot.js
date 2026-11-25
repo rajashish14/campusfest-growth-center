@@ -18,7 +18,7 @@ const MODEL_CHAIN = [...new Set([GEMINI_MODEL, ...(process.env.GEMINI_FALLBACK_M
 const CALL_TIMEOUT_MS = Number(process.env.GEMINI_TIMEOUT_MS) || 25000;
 const cooldown = new Map(); // model -> timestamp until which we skip it (shared across requests)
 const COOLDOWN_MS = 5 * 60 * 1000;
-const MAX_TOOL_ROUNDS = 8;
+const MAX_TOOL_ROUNDS = 8; // after this, the model must answer from what it has (tools disabled for one last call)
 
 // ------------------------------------------------------------------ data dictionary
 const DATA_DICTIONARY = {
@@ -215,7 +215,9 @@ HOW YOU WORK
 5. Recommendations: say what to scale, fix or stop, why (cite the numbers), the expected effect, and the risk. Prefer few, decisive recommendations.
 6. Execution: when the user wants something done, or when a clear action follows from your analysis and the user asked for actions, call propose_action. Proposals are NOT executed until the user clicks Confirm on the card - say so. Never claim a change was made.
 7. Follow-ups: resolve "it", "that campaign", "the second one" from the earlier conversation.
-8. Style: concise, direct, written for a busy growth team. Use Indian number formatting with ₹. Use short bullet lists or a small markdown table when comparing. End with an "Evidence:" line naming the tools/metrics used. No filler, no generic marketing advice.`;
+8. Data shortcuts: the registrations view has status_path (e.g. interested>confirmed>cancelled>confirmed), times_cancelled, was_reconfirmed and ever_waitlisted; the checkins view has is_verified_admission; get_overview.data_quality lists duplicates removed and excluded person types. Plan before calling tools: usually 1-3 calls are enough.
+9. Never write LaTeX or math markup; write calculations in plain text (152000 / 274000 = 55.5%). Only name tools in the Evidence line that you actually called in this turn.
+10. Style: concise, direct, written for a busy growth team. Use Indian number formatting with ₹. Use short bullet lists or a small markdown table when comparing. End with an "Evidence:" line naming the tools/metrics used. No filler, no generic marketing advice.`;
 }
 
 // ------------------------------------------------------------------ Gemini loop
@@ -294,7 +296,11 @@ async function chatGemini(messages, ctx, key) {
     });
     body.contents.push({ role: 'user', parts: responses });
   }
-  return 'I stopped after several tool calls without reaching an answer. Try asking a narrower question.';
+  // Out of tool rounds: ask for a final answer from the evidence already gathered, with tools switched off.
+  body.contents.push({ role: 'user', parts: [{ text: 'Tool budget used up. Answer now using only the tool results above. If they do not settle the question, say exactly what is missing.' }] });
+  const final = await callGemini({ ...body, toolConfig: { functionCallingConfig: { mode: 'NONE' } } }, key, ctx);
+  const text = (((final.candidates || [])[0] || {}).content || { parts: [] }).parts.map((p) => p.text || '').join('').trim();
+  return text || 'I could not reach an answer within the tool budget. Try a narrower question.';
 }
 
 function truncate(obj) {
@@ -507,6 +513,20 @@ function offline(messages, ctx) {
     lines.push(`- Opt-outs ${fmt(k.opted_out_people)} (${pc(k.opt_out_rate)}); abandoned form starts ${fmt(k.abandoned_starts)}; cancelled ${fmt(k.cancelled)}; waitlisted ${fmt(k.waitlisted)}`);
     lines.push(`\nWhy the verdict: ${k.decision.reasons.join(' ')}`);
     lines.push('\nEvidence: get_campaign_performance.');
+    return lines.join('\n');
+  }
+
+  // ---- data quality / person types
+  if (/\b(staff|test accounts?|test users?|internal|duplicates?|data quality|excluded|exclude|cleaning)\b/.test(t)) {
+    const o = use('get_overview');
+    const q = o.data_quality;
+    const adm = use('query_records', { table: 'checkins', filters: [{ field: 'is_verified_admission', op: 'eq', value: 'true' }, { field: 'person_type', op: 'ne', value: 'external' }], group_by: 'person_type', measure: 'count_distinct', field: 'person_id' });
+    lines.push('**Non-external records and data cleaning**\n');
+    lines.push(`- People excluded from targets by type: ${Object.entries(q.excluded_people_by_type).map(([k2, v]) => `${k2} ${v}`).join(', ')}`);
+    lines.push(`- Verified admissions of non-external people (distinct): ${(adm.groups || []).map((g) => `${g.group} ${g.value}`).join(', ') || 'none'}, all excluded from visitor counts`);
+    lines.push(`- Internal registrations excluded: ${q.internal_registrations_excluded}`);
+    lines.push(`- Duplicate rows removed (import copies): ${Object.entries(q.duplicate_rows_removed).filter(([, v]) => v).map(([k2, v]) => `${k2} ${v}`).join(', ') || 'none'}`);
+    lines.push('\nEvidence: get_overview (data_quality), query_records (checkins).');
     return lines.join('\n');
   }
 
