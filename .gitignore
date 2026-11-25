@@ -1,0 +1,5 @@
+node_modules/
+.env
+growth-center/data/raw.json
+growth-center/data/ops.json
+__pycache__/

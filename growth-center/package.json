@@ -1,0 +1,21 @@
+{
+  "name": "campusfest-growth-center",
+  "version": "1.0.0",
+  "description": "Attendee growth command center for CampusFest: funnel analytics, campaign and task management, and an AI growth analyst grounded in campaign data.",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Ashish Ranjan Kumar (22CE36001)",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^4.6.2",
+    "express": "^4.22.3",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}

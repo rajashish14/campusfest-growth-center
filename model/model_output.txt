@@ -1,0 +1,36 @@
+reserve 20000
+
+=== BASE ===
+channel                  spend  people   regs   conf    vis  Rs/vis
+College Partnerships     75000     970    873    815    757      99
+Student Referrals        35000     648    553    506    446      79
+Campus Ambassadors       48000     663    575    531    446     108
+Community Groups         24000     339    271    251    228     105
+Organic Search           14000     290    250    225    199      70
+Paid Social              40000     469    332    283    184     218
+Creator Partners         12000     127     90     75     50     242
+identified ext people (pre-event) 3505
+registrations 3001  (channels 2945 + referral loop 0 + recovered 56)
+visitors from channels 2309 | referral loop 0 | recovered 40 | waitlist 29 | gate 45 | walk-ins 125
+UNIQUE VERIFIED EXTERNAL VISITORS (demand) 2548
+day-1 unique visitors 1777 vs capacity 2600 -> OK
+capacity-limited visitors 2548; blended cost/visitor Rs 118
+
+=== STRETCH ===
+channel                  spend  people   regs   conf    vis  Rs/vis
+College Partnerships     75000    1107   1030    961    901      83
+Student Referrals        35000     711    628    574    513      68
+Campus Ambassadors       48000     677    607    560    481     100
+Community Groups         24000     360    288    266    245      98
+Organic Search           14000     290    250    225    202      69
+Paid Social              40000     469    332    283    195     205
+Creator Partners         12000     127     90     75     53     228
+identified ext people (pre-event) 3740
+registrations 3715  (channels 3225 + referral loop 387 + recovered 103)
+visitors from channels 2591 | referral loop 316 | recovered 76 | waitlist 55 | gate 64 | walk-ins 175
+UNIQUE VERIFIED EXTERNAL VISITORS (demand) 3277
+day-1 unique visitors 2286 vs capacity 2600 -> OK
+capacity-limited visitors 3277; blended cost/visitor Rs 92
+
+2025 actual: 2050 visitors at Rs 134/visitor
+base vs 2025: +24% ; stretch vs 2025: +60%

@@ -1,0 +1,16 @@
+# One-click deploy on Render (free web service).
+# Render dashboard -> New -> Blueprint -> point at this repo (the submission folder). Then add GEMINI_API_KEY in Environment.
+services:
+  - type: web
+    name: campusfest-growth-center
+    runtime: node
+    rootDir: growth-center
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-latest

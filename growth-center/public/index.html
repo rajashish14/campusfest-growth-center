@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusFest Growth Center</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23134e4a'/><path d='M8 22l5-7 4 4 7-10' stroke='%23fbbf24' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <aside class="nav">
+    <div class="brand">
+      <div class="logo">CF</div>
+      <div><strong>Growth Center</strong><span>CampusFest · Attendees</span></div>
+    </div>
+    <nav id="nav">
+      <a data-view="overview" class="active">Overview</a>
+      <a data-view="campaigns">Campaigns</a>
+      <a data-view="decisions">Decisions</a>
+      <a data-view="execution">Execution</a>
+      <a data-view="data">Data &amp; settings</a>
+    </nav>
+    <div class="nav-foot">
+      <div id="ai-badge" class="pill">AI: …</div>
+      <small>Built by Ashish Ranjan Kumar<br>22CE36001</small>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <h1 id="view-title">Overview</h1>
+        <div class="sub" id="view-sub"></div>
+      </div>
+      <div class="timemachine">
+        <label for="asof">Snapshot <span class="hint">(end of day, IST)</span></label>
+        <div class="tm-row">
+          <button class="ghost small" id="asof-prev" title="Previous week">−7d</button>
+          <input type="date" id="asof">
+          <button class="ghost small" id="asof-next" title="Next week">+7d</button>
+          <button class="ghost small" id="asof-latest">Latest</button>
+        </div>
+        <input type="range" id="asof-range" min="0" max="100" value="100">
+      </div>
+      <button id="toggle-chat" class="primary">Ask the copilot</button>
+    </header>
+
+    <section id="view-overview" class="view"></section>
+    <section id="view-campaigns" class="view hidden"></section>
+    <section id="view-decisions" class="view hidden"></section>
+    <section id="view-execution" class="view hidden"></section>
+    <section id="view-data" class="view hidden"></section>
+  </main>
+
+  <aside id="chat" class="chat">
+    <div class="chat-head">
+      <div><strong>Growth Analyst</strong><span id="chat-mode"></span></div>
+      <div>
+        <button class="ghost small" id="chat-clear" title="Start a new conversation">New</button>
+        <button class="ghost small" id="chat-close">✕</button>
+      </div>
+    </div>
+    <div id="chat-log" class="chat-log"></div>
+    <div class="chat-suggest" id="chat-suggest"></div>
+    <form id="chat-form" class="chat-form">
+      <textarea id="chat-input" rows="2" placeholder="Ask about performance, bottlenecks, budget… (Enter to send)"></textarea>
+      <button class="primary" type="submit">Send</button>
+    </form>
+  </aside>
+
+  <div id="modal" class="modal hidden"><div class="modal-card" id="modal-card"></div></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/vendor/chart.umd.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
