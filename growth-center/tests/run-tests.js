@@ -131,6 +131,11 @@ async function test(name, fn) {
     const p = r.proposals[0].payload;
     assert.deepStrictEqual([p.title, p.campaign_id, p.owner_id, p.due], ['Reduce nurture frequency', 'C02', 'T04', '2025-04-25']);
   });
+  await test('a status proposal without a real change is rejected (model must say paused/stopped)', () => {
+    assert.throws(() => actions.propose('set_campaign_status', { campaign_id: 'C02' }, 'x'), /needs a change/);
+    assert.throws(() => actions.propose('set_campaign_status', { campaign_id: 'C02', status: 'active' }, 'x'), /already active/);
+    assert.ok(actions.propose('set_campaign_status', { campaign_id: 'C02', status: 'paused' }, 'x').id);
+  });
   await test('copilot numbers follow changed data', async () => {
     actions.upsertDaily({ campaign_id: 'C03', activity_date: '2025-04-11', impressions: 100, clicks: 1, marketing_spend_inr: 41000 });
     const r = await copilot.chat({ messages: [{ role: 'user', content: 'How is Creator Partners doing?' }], asOf: '2025-04-20' });

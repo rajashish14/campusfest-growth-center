@@ -96,13 +96,13 @@ const TOOLS = [
     parameters: { type: 'object', properties: { as_of: AS_OF } } },
   // no parameters block: Gemini rejects an OBJECT schema with empty properties
   { name: 'get_data_dictionary', description: 'What data exists, metric definitions, and what the data CANNOT answer. Call this before answering anything about fields you are not sure exist.' },
-  { name: 'propose_action', description: 'Propose a write action. It is NOT executed until the user clicks Confirm in the UI. Types: create_task {title, campaign_id?, owner_id?, due?, priority?, notes?}; update_task {task_id, status?, due?, owner_id?, priority?, notes?}; set_campaign_status {campaign_id, status: active|scaling|paused|stopped, planned_budget_inr?, reason?}; update_initiative {initiative_id, status?, scale_at?, stop_at?, notes?}.',
+  { name: 'propose_action', description: 'Propose a write action. It is NOT executed until the user clicks Confirm in the UI. Types: create_task {title, campaign_id?, owner_id?, due?, priority?, notes?}; update_task {task_id, status?, due?, owner_id?, priority?, notes?}; set_campaign_status {campaign_id, status (REQUIRED to pause/stop/scale: active|scaling|paused|stopped), planned_budget_inr?, reason?}; update_initiative {initiative_id, status?, scale_at?, stop_at?, notes?}.',
     parameters: { type: 'object', properties: {
       type: S('create_task | update_task | set_campaign_status | update_initiative'),
       rationale: S('One-sentence reason grounded in the data'),
       title: S('create_task / update_task: task title'), task_id: S('update_task: task id like TSK-004'),
       campaign_id: S('Campaign id C01-C07'), owner_id: S('Owner id T01-T06'), due: S('YYYY-MM-DD'),
-      priority: S('high | medium | low'), status: S('Task status or campaign status or initiative status'),
+      priority: S('high | medium | low'), status: S('REQUIRED for set_campaign_status: active | scaling | paused | stopped. For update_task: todo | doing | blocked | done. For update_initiative: planned | active | scaled | changed | stopped'),
       notes: S('Free text'), planned_budget_inr: N('set_campaign_status: planned budget'),
       initiative_id: S('update_initiative: I1-I5'), scale_at: N('update_initiative'), stop_at: N('update_initiative'), reason: S('Optional reason for the log') },
       required: ['type', 'rationale'] } },

@@ -3,6 +3,9 @@
 **Ashish Ranjan Kumar · Roll no. 22CE36001 · RISA Labs Growth APM assignment**
 **Challenge chosen: A, Attendee Growth.** City: **Bengaluru**.
 
+> **Live app:** https://campusfest-growth-center-9exd.onrender.com · **Code:** https://github.com/rajashish14/campusfest-growth-center
+> It is hosted on Render's free plan, so the first visit after ~15 idle minutes takes about 50 seconds to wake up. Edits made in the app are kept while it runs. *Data & settings → Reset* restores the original dataset at any time.
+
 | Deliverable | Where |
 |---|---|
 | 3-slide strategy (PDF) | [`slides/Ashish_Ranjan_Kumar_22CE36001_Growth_Strategy.pdf`](slides/Ashish_Ranjan_Kumar_22CE36001_Growth_Strategy.pdf) (source: `slides/slides.html`) |
@@ -202,12 +205,12 @@ Node.js and Express with a vanilla-JS frontend and Chart.js. Data is stored in J
 
 ### Testing
 
-`npm test` runs 28 automated checks against a throwaway data folder:
+`npm test` runs 29 automated checks against a throwaway data folder:
 - baseline numbers (all of §3);
 - snapshot rules (no visitors before the event, target versions switching on 15 March, status replay for R0001);
 - data edits propagating (spend, duplicate-ID edits, new targets, status changes, reset, re-importing the workbook);
 - execution (overdue detection);
-- copilot (proposals not executed without confirmation, refusals for demographics and ROI, follow-up context, numbers following changed data, a calculator that rejects code);
+- copilot (proposals not executed without confirmation, proposals that would change nothing rejected, refusals for demographics and ROI, follow-up context, numbers following changed data, a calculator that rejects code);
 - a **mocked Gemini round trip** (function call → tool on live data → functionResponse sent back → proposal still pending), plus the fallback when Gemini returns 429.
 
 I also checked every view visually in headless Chrome.
@@ -223,7 +226,7 @@ cd growth-center
 npm install
 cp .env.example .env        # optional: paste a free Gemini key from https://aistudio.google.com/apikey
 npm start                   # http://localhost:3000
-npm test                    # 28 checks
+npm test                    # 29 checks
 ```
 
 - **First run** builds `data/raw.json` and `data/ops.json` from `data/Attendee Dataset.xlsx` (the original file is kept untouched for testing). **Reset** in *Data & settings* restores it.

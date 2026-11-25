@@ -128,7 +128,15 @@ function propose(type, payload, rationale) {
     if (payload.due && !isDate(payload.due)) throw bad('due must be YYYY-MM-DD');
   }
   if (type === 'update_task' && !store.ops.tasks.find((t) => t.id === payload.task_id)) throw bad(`Task ${payload.task_id} not found`);
-  if (type === 'set_campaign_status') { if (!validateCampaign(payload.campaign_id)) throw bad('campaign_id required'); if (payload.status && !CAMPAIGN_STATUSES.includes(payload.status)) throw bad('invalid campaign status'); }
+  if (type === 'set_campaign_status') {
+    if (!validateCampaign(payload.campaign_id)) throw bad('campaign_id required');
+    if (payload.status && !CAMPAIGN_STATUSES.includes(payload.status)) throw bad(`invalid campaign status '${payload.status}'. Use one of: ${CAMPAIGN_STATUSES.join(', ')}`);
+    if (!payload.status && payload.planned_budget_inr === undefined) throw bad(`set_campaign_status needs a change: pass status (${CAMPAIGN_STATUSES.join(' | ')}, e.g. "paused" to pause) and/or planned_budget_inr`);
+    const cur = (store.ops.campaigns[payload.campaign_id] || {}).status;
+    if (payload.status && payload.status === cur && payload.planned_budget_inr === undefined) throw bad(`${payload.campaign_id} is already ${cur}; nothing to change`);
+  }
+  if (type === 'update_task' && Object.keys(payload).filter((k) => k !== 'task_id').length === 0) throw bad('update_task needs at least one field to change (status, due, owner_id, priority, notes, title)');
+  if (type === 'update_initiative' && Object.keys(payload).filter((k) => !['initiative_id', 'reason'].includes(k)).length === 0) throw bad('update_initiative needs at least one field to change');
   if (type === 'update_initiative' && !store.ops.initiatives.find((i) => i.id === payload.initiative_id)) throw bad(`Initiative ${payload.initiative_id} not found`);
   const id = 'ACT-' + crypto.randomBytes(4).toString('hex');
   const proposal = { id, type, payload, rationale: rationale || '', summary: describe(type, payload), created_at: Date.now() };
