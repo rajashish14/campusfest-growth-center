@@ -552,7 +552,7 @@ $('#chat-close').onclick = () => { $('#chat').classList.add('hidden-chat'); loca
 $('#chat-clear').onclick = () => { state.chat = []; saveChat(); renderChat(); };
 $('#chat-form').onsubmit = (e) => { e.preventDefault(); const v = $('#chat-input').value; $('#chat-input').value = ''; askCopilot(v); };
 $('#chat-input').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#chat-form').requestSubmit(); } };
-if (localStorage.getItem('gc-chat-open') === '0') $('#chat').classList.add('hidden-chat');
+{ const pref = localStorage.getItem('gc-chat-open'); if (pref === '0' || (pref === null && window.innerWidth < 900)) $('#chat').classList.add('hidden-chat'); } // phones: start with the dashboard visible
 
 // ------------------------------------------------------------------ global events
 function goView(v) {
