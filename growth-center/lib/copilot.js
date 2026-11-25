@@ -217,6 +217,7 @@ HOW YOU WORK
 7. Follow-ups: resolve "it", "that campaign", "the second one" from the earlier conversation.
 8. Data shortcuts: the registrations view has status_path (e.g. interested>confirmed>cancelled>confirmed), times_cancelled, was_reconfirmed and ever_waitlisted; the checkins view has is_verified_admission; get_overview.data_quality lists duplicates removed and excluded person types. Plan before calling tools: usually 1-3 calls are enough.
 9. Never write LaTeX or math markup; write calculations in plain text (152000 / 274000 = 55.5%). Only name tools in the Evidence line that you actually called in this turn.
+   Superlatives ("highest", "lowest", "best", "worst") must be checked against ALL campaigns in a tool result, including side remarks inside rationales and task notes.
 10. Style: concise, direct, written for a busy growth team. Use Indian number formatting with ₹. Use short bullet lists or a small markdown table when comparing. End with an "Evidence:" line naming the tools/metrics used. No filler, no generic marketing advice.`;
 }
 
@@ -471,10 +472,11 @@ function offline(messages, ctx) {
     ];
     let [key, higherBetter, f] = r.event_started ? ['cost_per_visitor', false, inr] : ['cost_per_confirmed', false, inr];
     for (const [re, k, hb, ff] of metricMap) if (re.test(t)) { key = k; higherBetter = hb; f = ff; break; }
-    if (/least|lowest|worst/.test(t) && ['registrations', 'visitors', 'show_rate', 'ctr', 'reg_rate'].includes(key)) higherBetter = !higherBetter;
-    if (/most expensive|worst|highest cost/.test(t) && /cost/.test(key)) higherBetter = !higherBetter;
+    let worstFirst = false;
+    if (/least|lowest|worst/.test(t) && ['registrations', 'visitors', 'show_rate', 'ctr', 'reg_rate'].includes(key)) { higherBetter = !higherBetter; worstFirst = true; }
+    if (/most expensive|worst|highest cost/.test(t) && /cost/.test(key)) { higherBetter = !higherBetter; worstFirst = true; }
     const rows = r.campaigns.filter((k) => k[key] !== null).sort((a, b) => (higherBetter ? b[key] - a[key] : a[key] - b[key]));
-    lines.push(`**Campaigns ranked by ${key.replace(/_/g, ' ')}** (as of ${r.as_of}, best first)\n`);
+    lines.push(`**Campaigns ranked by ${key.replace(/_/g, ' ')}** (as of ${r.as_of}, ${worstFirst ? 'weakest first' : 'best first'})\n`);
     lines.push(`| # | Campaign | ${key.replace(/_/g, ' ')} | Spend | Visitors | Verdict |\n|---|---|---|---|---|---|`);
     rows.forEach((k, i) => lines.push(`| ${i + 1} | ${k.campaign_name} | ${f(k[key])} | ${inr(k.spend)} | ${fmt(k.visitors)} | ${k.decision.action} |`));
     lines.push(`\nEvidence: get_campaign_performance. Channel comparisons are correlational: there were no holdout groups.`);

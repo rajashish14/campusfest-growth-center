@@ -30,7 +30,12 @@ const wrap = (fn) => async (req, res) => {
   }
 };
 const realDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v;
-const asOf = (req) => (realDate(req.query.asOf) ? req.query.asOf : undefined); // anything else falls back to the latest date
+// invalid dates fall back to the latest date; valid dates are clamped to the range the data covers
+const asOf = (req) => {
+  if (!realDate(req.query.asOf)) return undefined;
+  const { min, max } = engine.dataRange();
+  return req.query.asOf < min ? min : req.query.asOf > max ? max : req.query.asOf;
+};
 
 // ---------------------------------------------------------------- read
 app.get('/api/meta', wrap(() => ({
