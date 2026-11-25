@@ -46,14 +46,19 @@ function clean() {
   if (cleanCache.version === store.version) return cleanCache.data;
   const raw = store.raw;
   const dq = {};
-  const d = (name, key) => { const x = dedupe(raw[name] || [], key); dq[name] = x.dups; return x.rows; };
-  const daily = d('daily', 'activity_id');
-  const people = d('people', 'person_id');
-  const interactions = d('interactions', 'interaction_id');
-  const registrations = d('registrations', 'registration_id');
-  const regHistory = d('regHistory', 'history_id').slice().sort((a, b) => (a.effective_at < b.effective_at ? -1 : a.effective_at > b.effective_at ? 1 : 0));
-  const checkins = d('checkins', 'event_id');
-  const targets = (raw.targets || []).slice().sort((a, b) => (a.effective_at < b.effective_at ? -1 : 1));
+  const invalid = {};
+  // A row whose date cannot be read (bad edit, malformed import) is skipped and reported, never allowed to crash analytics.
+  const okDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v) && !isNaN(Date.parse(v.slice(0, 10) + 'T00:00:00Z'))
+    && new Date(v.slice(0, 10) + 'T00:00:00Z').toISOString().slice(0, 10) === v.slice(0, 10);
+  const valid = (name, rows, field) => { const out = rows.filter((r) => okDate(r[field])); if (rows.length - out.length) invalid[name] = rows.length - out.length; return out; };
+  const d = (name, key, field) => { const x = dedupe(raw[name] || [], key); dq[name] = x.dups; return valid(name, x.rows, field); };
+  const daily = d('daily', 'activity_id', 'activity_date');
+  const people = d('people', 'person_id', 'first_seen_at');
+  const interactions = d('interactions', 'interaction_id', 'occurred_at');
+  const registrations = d('registrations', 'registration_id', 'registered_at');
+  const regHistory = d('regHistory', 'history_id', 'effective_at').slice().sort((a, b) => (a.effective_at < b.effective_at ? -1 : a.effective_at > b.effective_at ? 1 : 0));
+  const checkins = d('checkins', 'event_id', 'occurred_at');
+  const targets = valid('targets', raw.targets || [], 'effective_at').slice().sort((a, b) => (a.effective_at < b.effective_at ? -1 : 1));
   const campaigns = raw.campaigns || [];
   const event = (raw.event || [])[0] || {};
   const personType = new Map(people.map((p) => [p.person_id, p.person_type]));
@@ -66,7 +71,7 @@ function clean() {
     histByReg.get(h.registration_id).push(h);
   }
   const data = { daily, people, interactions, registrations, regHistory, checkins, targets, campaigns, event,
-    personType, personById, regById, campaignName, histByReg, dq };
+    personType, personById, regById, campaignName, histByReg, dq, invalid };
   cleanCache = { version: store.version, data };
   return data;
 }
@@ -390,6 +395,7 @@ function snapshot(asOfInput) {
     engagement: { interaction_counts: interactionCounts, brochure_people: brochure.size, question_people: question.size },
     data_quality: {
       duplicate_rows_removed: c.dq,
+      invalid_date_rows_skipped: c.invalid,
       excluded_people_by_type: excluded,
       internal_registrations_excluded: internalRegs,
       non_external_verified_admissions_excluded: nonExternalAdmits.size,

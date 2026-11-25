@@ -9,7 +9,12 @@ const PRIORITIES = ['high', 'medium', 'low'];
 const CAMPAIGN_STATUSES = ['active', 'scaling', 'paused', 'stopped'];
 
 function bad(msg) { const e = new Error(msg); e.status = 400; return e; }
-const isDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+// a real calendar date, not just the YYYY-MM-DD shape (2025-13-45 or 2025-02-30 are rejected)
+const isDate = (s) => {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = new Date(s + 'T00:00:00Z');
+  return !isNaN(d) && d.toISOString().slice(0, 10) === s && s >= '2000-01-01' && s <= '2100-12-31';
+};
 
 function nextTaskId() {
   const n = store.ops.tasks.reduce((m, t) => Math.max(m, Number(String(t.id).replace(/\D/g, '')) || 0), 0) + 1;

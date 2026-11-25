@@ -109,6 +109,20 @@ async function test(name, fn) {
     assert.strictEqual(engine.snapshot('2025-04-20').totals.visitors, 2050);
   });
 
+  await test('impossible dates are rejected on write (2025-13-45, 2025-02-30)', () => {
+    assert.throws(() => actions.upsertDaily({ campaign_id: 'C02', activity_date: '2025-13-45', marketing_spend_inr: 1 }), /activity_date/);
+    assert.throws(() => actions.upsertDaily({ campaign_id: 'C02', activity_date: '2025-02-30', marketing_spend_inr: 1 }), /activity_date/);
+    assert.throws(() => actions.createTask({ title: 'bad due date', due: '2025-02-30' }), /due/);
+  });
+  await test('a corrupt date already in the data is skipped and reported; analytics keep working', () => {
+    store.raw.daily.push({ campaign_id: 'C02', campaign_name: 'Paid Social', activity_date: '2025-13-45', marketing_spend_inr: 999, impressions: 0, clicks: 0, activity_id: 'AD-BAD' });
+    store.saveRaw();
+    const s2 = engine.snapshot('2025-04-20');
+    assert.strictEqual(s2.totals.spend, 274000);
+    assert.strictEqual(s2.data_quality.invalid_date_rows_skipped.daily, 1);
+    store.resetToSource();
+  });
+
   console.log('\nExecution + copilot');
   await test('overdue task shows up in diagnosis', () => {
     actions.createTask({ title: 'Test overdue task', due: '2025-04-01', owner_id: 'T04' });

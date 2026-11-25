@@ -29,7 +29,8 @@ const wrap = (fn) => async (req, res) => {
     if (!e.status) console.error(e);
   }
 };
-const asOf = (req) => (req.query.asOf && /^\d{4}-\d{2}-\d{2}$/.test(req.query.asOf) ? req.query.asOf : undefined);
+const realDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v;
+const asOf = (req) => (realDate(req.query.asOf) ? req.query.asOf : undefined); // anything else falls back to the latest date
 
 // ---------------------------------------------------------------- read
 app.get('/api/meta', wrap(() => ({
