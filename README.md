@@ -20,7 +20,7 @@
 - **2025 baseline, after cleaning the data properly:** 2,050 verified unique external visitors against a goal of 2,200; 2,800 external registrations against 3,200; ₹2,74,000 spent of a ₹3,00,000 budget, or ₹134 per visitor.
 - **Where it leaked:** 700 identified people never registered (275 of them started the form and stopped). 575 confirmed people did not come. 88 sat on the waitlist and were never released. 60 confirmed people were denied or stuck as pending at the gate.
 - **Where the money went:** Paid Social and Creator Partners took **56% of spend** but produced **27% of campaign-attributed visitors**, at ₹274 and ₹337 per visitor. College Partnerships, Referrals and Organic produced visitors at **₹69–81**.
-- **2026 target on the same ₹3L:** **2,550 verified visitors (base, +24%)** and **3,280 (stretch, +60%)**. The worst case in the sensitivity analysis is 2,158, which still beats 2025.
+- **2026 target on the same ₹3L:** **2,550 verified visitors (base, +24%)** and **3,280 (stretch, +60%)**. If the three main risks all hit at once (fast saturation, reminders failing, no walk-ins) it is still 2,099, which beats 2025; only if the waitlist and gate fixes also fail does it fall back to about 2025's level (2,033).
 - **How:** move ₹1L from paid and creators into college clubs and referrals; add a show-up engine (reminders, QR pass, waitlist release, gate fix); recover form-abandoners; keep paid on a leash with a kill rule.
 - **Proof the rules work:** replayed on the 2025 data, my fatigue rule flags Paid Social on **16 March 2025**. After that date it spent ₹25,800 for 61 visitors (₹423 each).
 
@@ -127,7 +127,9 @@ Most of the show-rate gain comes from **mix shift** (less money in channels that
 | Channels saturate fast (e = 0.5) | 2,288 |
 | Reminders do nothing | 2,480 |
 | No walk-ins | 2,423 |
-| All of the above plus no waitlist or gate fix | **2,158** |
+| Fast saturation + reminders fail + no walk-ins (the three main risks together) | **2,099** |
+| …and the waitlist and gate fixes also fail (everything goes wrong) | 2,033 |
+| Fast saturation + reminders fail + no waitlist/gate fix (walk-ins kept) | 2,158 |
 | Reminders work as in the meta-analysis | 2,593 |
 | Near-linear scaling (e = 0.9) | 2,728 |
 

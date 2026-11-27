@@ -16,7 +16,9 @@ for label, over in [
     ("reminders cut no-shows 0% (show-up engine fails)", dict(noshow_cut=0.0)),
     ("reminders cut no-shows 25% (meta-analysis central estimate)", dict(noshow_cut=0.25)),
     ("no walk-ins at all", dict(walkins=0)),
-    ("worst case: e=0.5, no reminder effect, no waitlist/gate fix", dict(e_up=0.5, noshow_cut=0.0, waitlist_release=0, gate_recover=0)),
+    ("the three main risks together: e=0.5, no reminder effect, no walk-ins", dict(e_up=0.5, noshow_cut=0.0, walkins=0)),
+    ("...and the waitlist/gate fixes also fail (everything goes wrong)", dict(e_up=0.5, noshow_cut=0.0, walkins=0, waitlist_release=0, gate_recover=0)),
+    ("e=0.5, no reminder effect, no waitlist/gate fix (walk-ins kept)", dict(e_up=0.5, noshow_cut=0.0, waitlist_release=0, gate_recover=0)),
 ]:
     x = v(**over); print(f"  {label:70s} {x:6.0f}  ({x-base:+.0f})")
 # confirmed + show-rate per scenario (channel level)

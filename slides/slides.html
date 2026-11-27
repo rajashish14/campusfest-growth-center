@@ -55,11 +55,13 @@
   /* slides 2 and 3 carry less text than slide 1: larger type so the page is filled and easier to read */
   .s2 .cols > .box:first-child { display: flex; flex-direction: column; }
   .s2 .cols > .box:first-child table { font-size: 10.5px !important; }
-  .s2 .cols > .box:first-child td { padding: 4.6px 5px; }
+  .s2 .cols > .box:first-child td { padding: 4px 5px; }
   .s2 .cols > .box:first-child .mini { font-size: 10px; }
-  .s2 .cols > .box:first-child > p.mini { font-size: 10.2px; margin-top: auto !important; padding-top: 6px; }
-  .s2 .cols > div:last-child p, .s2 .cols > div:last-child li, .s2 .cols > div:last-child td { font-size: 10.8px; }
-  .s2 .cols > div:last-child td { padding: 3.6px 4px; }
+  .s2 .cols > .box:first-child > p.mini { font-size: 10.2px; margin-top: auto !important; padding-top: 4px; }
+  .s2 .cols > div:last-child p, .s2 .cols > div:last-child li, .s2 .cols > div:last-child td { font-size: 10.4px; }
+  .s2 .cols > div:last-child li + li { margin-top: 2px; }
+  .s2 .cols { margin-bottom: 4px; }
+  .s2 .cols > div:last-child td { padding: 3.2px 4px; }
   .s3 table { font-size: 10.8px; }
   .s3 td { padding: 3.6px 5px; }
   .s3 .cols p, .s3 .cols li { font-size: 11px; line-height: 1.42; }
@@ -109,7 +111,7 @@
     <div style="display:flex;flex-direction:column;gap:9px;min-height:0">
       <div class="bigrow">
         <div class="stat grey"><div class="big">2,050</div><small>2025 actual verified external visitors (goal 2,200). ₹134 per visitor.</small></div>
-        <div class="stat"><div class="big">2,550</div><small><b>Base 2026</b>, +24%. ₹118 per visitor. Floor in the worst case: 2,158.</small></div>
+        <div class="stat"><div class="big">2,550</div><small><b>Base 2026</b>, +24%. ₹118 per visitor. Still 2,099 if the three main risks all hit.</small></div>
         <div class="stat amber"><div class="big">3,280</div><small><b>Stretch</b>, +60%. ₹92 per visitor. Venue ceiling ≈ 3,700.</small></div>
       </div>
       <div class="box" style="flex:1">
@@ -148,15 +150,16 @@
           <tr><td>channels saturate fast (e = 0.5)</td><td class="n">2,288</td></tr>
           <tr><td>reminders do nothing</td><td class="n">2,480</td></tr>
           <tr><td>no walk-ins</td><td class="n">2,423</td></tr>
-          <tr><td>all three go wrong together</td><td class="n"><b>2,158</b></td></tr>
+          <tr><td>all three go wrong together</td><td class="n"><b>2,099</b></td></tr>
+          <tr><td>…and the waitlist and gate fixes also fail</td><td class="n">2,033</td></tr>
           <tr><td>reminders work as in the meta-analysis</td><td class="n">2,593</td></tr>
         </table>
-        <p class="mini" style="margin-top:4px">Even the worst case beats 2025 (2,050). That is why base = 2,550 is a commitment and 3,280 is a stretch.</p>
+        <p class="mini" style="margin-top:4px">Even with all three, the plan beats 2025 (2,050); only if the ops fixes also fail does it fall back to 2025's level. So 2,550 is a commitment with a known floor.</p>
       </div>
       <div class="box" style="flex:1">
         <h2>What has to be true for the stretch</h2>
         <ul>
-          <li>Each registrant brings 0.12 extra registrations through the squad referral.</li>
+          <li>Squad referrals add 0.12 registrations per registrant.</li>
           <li>One in five form-abandoners is recovered.</li>
           <li>Group passes add 3 points to registration rate.</li>
           <li>Reminders cut no-shows 25%.</li>
@@ -238,7 +241,7 @@
       <div class="box">
         <h2>Dependencies and overlap</h2>
         <ul>
-          <li>Bet 3 lifts every other channel, so it goes live first.</li>
+          <li>Bet 3 lifts every channel, so its setup (WhatsApp opt-in, waitlist auto-release) is built in week 1. The reminders themselves fire in the final week.</li>
           <li>Retargeting (bet 4) needs the traffic from bets 1–2.</li>
           <li>Clubs and referrals reach the same students. First-touch person_id attribution prevents double counting.</li>
           <li>Paid cuts happen in weeks 1–3 so the money can fund bets 1–3.</li>
@@ -261,9 +264,9 @@
   <div class="box" style="padding:7px 9px">
     <table>
       <tr><th style="width:12%">Bet</th><th style="width:17%">Critical variable · biggest risk</th><th style="width:16%">Early signal (weeks 1–2)</th><th style="width:15%"><span class="up">▲ Scale</span> if</th><th style="width:15%"><span class="chg">◆ Change</span> if</th><th style="width:13%"><span class="stop">■ Stop</span> if</th><th style="width:12%">Action when it moves</th></tr>
-      <tr><td><span class="rank">1</span> College 2.0</td><td>Registrations per signed college. <i>Risk:</i> clubs sign up but do not push.</td><td>Captains active within 72 hours; 8 pilot colleges registering</td><td>≥25 registrations per college in 14 days and ≤₹90 per confirmed</td><td>10–25 registrations: swap the captain, add a campus booth</td><td>&lt;10 registrations after 14 days</td><td>Scale: sign 10 more colleges from the reserve. Stop: drop the college, move its ₹.</td></tr>
+      <tr><td><span class="rank">1</span> College 2.0</td><td>Registrations per signed college. <i>Risk:</i> clubs sign up but do not push.</td><td>Captains active within 72h; pilot registrations vs model pace (~4 per college per fortnight)</td><td>≥7 registrations per college in 14 days (1.5× model pace)</td><td>3–6 registrations: swap the captain, add a campus booth</td><td>&lt;3 registrations after 14 days</td><td>Scale: sign 10 more colleges from the reserve. Stop: drop the college, move its ₹.</td></tr>
       <tr><td><span class="rank">2</span> Squad referrals</td><td>Invites per registrant × invitee conversion (k). <i>Risk:</i> reward attracts fake sign-ups.</td><td>Share rate ≥20% of new registrants in week 1</td><td>k ≥ 0.12 and invitee show intent (YES reply) ≥ 60%</td><td>Shares are fine but conversion is low: fix the invitee landing page and reward copy</td><td>k &lt; 0.04 after 2 weeks</td><td>Scale: raise the reward tier. Stop: keep the share link, drop the rewards.</td></tr>
-      <tr><td><span class="rank">3</span> Show-up engine</td><td>Show-rate of confirmed vs the 10% holdout. <i>Risk:</i> WhatsApp opt-in coverage.</td><td>YES-reply rate to the T-7 reminder; QR pass opens</td><td>YES-reply ≥40% and holdout gap ≥ +4 pts</td><td>Reply rate 20–40%: change send time and copy, add a calendar hold</td><td>Gap ≤ 0 after 2 waves</td><td>Stop: put the ₹ into gate staff instead.</td></tr>
+      <tr><td><span class="rank">3</span> Show-up engine</td><td>Show-rate of confirmed vs the 10% holdout. <i>Risk:</i> WhatsApp opt-in coverage.</td><td>WhatsApp opt-in ≥70% at registration; brochure downloads (2025: 82.4% vs 70.6% show)</td><td>T-7 wave: YES-reply ≥40% and holdout gap ≥ +4 pts → T-2 and T-0 waves to everyone</td><td>Opt-in &lt;70%: add it to the form. Reply 20–40%: new copy and send time</td><td>Holdout gap ≤ 0 after the T-7 wave</td><td>Stop: skip the later waves; put the ₹ into gate staff.</td></tr>
       <tr><td><span class="rank alt">4</span> Paid on a leash</td><td>14-day CTR and ₹ per confirmed. <i>Risk:</i> creative fatigue (as happened in 2025).</td><td>CTR versus the previous 14 days</td><td>CTR ≥2.5% and ≤₹120 per confirmed: +₹10k from reserve</td><td>CTR drops ≥30% vs the previous 14 days: new creatives within 48 hours</td><td>CTR &lt;1.5% for 5 days or &gt;₹200 per confirmed</td><td>Pause, then move the ₹ to the current Scale-rated channel.</td></tr>
       <tr><td><span class="rank">5</span> Recovery</td><td>Abandoners recovered within 72 hours. <i>Risk:</i> nudges feel spammy.</td><td>Recovery rate of the first 100 nudges</td><td>≥15% recovered</td><td>7–15%: shorter form, different channel</td><td>&lt;7% or opt-outs &gt;3%</td><td>Stop after the first batch if the thresholds fail.</td></tr>
     </table>
@@ -288,7 +291,7 @@
     <div class="box">
       <h2>Backtest: these rules on the 2025 data</h2>
       <p>Replaying 2025 day by day in the Growth Center, the fatigue rule (CTR down ≥30% vs the previous 14 days) <b>flags Paid Social on 16 March</b> (2.7% → 1.8%). After that date Paid spent <b>₹25,800 for 61 visitors (₹423 each)</b>. At College Partnerships' ₹81 per visitor, the same money buys ~5× the visitors.</p>
-      <p style="margin-top:5px">The same replay on 20 March projects ~1,720 visitors against the 2,200 goal (the actual was 2,050). The gap was visible <b>three weeks before the event</b>.</p>
+      <p style="margin-top:5px">On 20 March the replay projects ~1,720 visitors against the 2,200 goal (actual: 2,050), so the gap was visible <b>three weeks out</b>.</p>
     </div>
     <div class="box">
       <h2>Leading indicators we already trust</h2>

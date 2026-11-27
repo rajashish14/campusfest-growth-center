@@ -4,6 +4,8 @@ base 2548
   reminders cut no-shows 0% (show-up engine fails)                         2480  (-68)
   reminders cut no-shows 25% (meta-analysis central estimate)              2593  (+45)
   no walk-ins at all                                                       2423  (-125)
-  worst case: e=0.5, no reminder effect, no waitlist/gate fix              2158  (-390)
+  the three main risks together: e=0.5, no reminder effect, no walk-ins    2099  (-449)
+  ...and the waitlist/gate fixes also fail (everything goes wrong)         2033  (-515)
+  e=0.5, no reminder effect, no waitlist/gate fix (walk-ins kept)          2158  (-390)
 base: channel confirmed 2685, channel visitors 2309, show-rate 86.0%
 stretch: channel confirmed 2945, channel visitors 2591, show-rate 88.0%
